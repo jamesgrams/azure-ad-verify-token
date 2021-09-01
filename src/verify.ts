@@ -70,7 +70,7 @@ export function verify(token: string, options: VerifyOptions, jwtOptions: any) {
     return Promise.reject('invalid token');
   }
   
-  let verifyOptions = {
+  let verifyOptions:jwt.VerifyOptions = {
     algorithms: ['RS256'],
     audience,
     issuer,
