@@ -51,8 +51,9 @@ function getPublicKey(jwksUri: string, kid: string) {
  *
  * @param token Token to verify.
  * @param options Configuration options.
+ * @param jwtOptions Options to pass directly to jwt verify.
  */
-export function verify(token: string, options: VerifyOptions) {
+export function verify(token: string, options: VerifyOptions, jwtOptions: any) {
   const { jwksUri, audience, issuer } = options;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let decoded: { [key: string]: any };
@@ -68,12 +69,14 @@ export function verify(token: string, options: VerifyOptions) {
   } catch (error) {
     return Promise.reject('invalid token');
   }
-
+  
+  let verifyOptions = {
+    algorithms: ['RS256'],
+    audience,
+    issuer,
+  };
+  if( jwtOptions ) verifyOptions = {...verifyOptions, ...jwtOptions};
   return getPublicKey(jwksUri, kid).then((key) =>
-    jwt.verify(token, key, {
-      algorithms: ['RS256'],
-      audience,
-      issuer,
-    })
+    jwt.verify(token, key, verifyOptions)
   );
 }
